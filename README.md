@@ -118,7 +118,7 @@ A tabela no banco de dados será criada na inicialização do serviço, mas caso
 ### Como Usar a API
 Para submeter um código para análise, envie uma requisição POST para o endpoint /orchestrate-analysis do Orquestrador.
 
-Para auxiliar. Existe uma collections para utilização na pasta collections. [collection_muliagentes](collections/Sistema%20Multi%20Agentes.postman_collection.json)
+Para auxiliar. Existe uma collections para utilização na pasta collections. [collection_multiagentes](collections/Sistema%20Multi%20Agentes.postman_collection.json)
 
 **URL:** http://localhost:8080/orchestrate-analysis
 **Método:** POST
