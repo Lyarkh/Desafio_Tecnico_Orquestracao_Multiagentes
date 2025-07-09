@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # --- SERVIÇO DO BANCO DE DADOS POSTGRESQL ---
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d postgres_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- SERVIÇO DO AGENTE DE SEGURANÇA ---
+  security_agent:
+    build: ./security_agent
+    container_name: security_agent
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./security_agent/app:/app
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      MODEL_NAME: ${MODEL_NAME}
+
+  # --- SERVIÇO DO AGENTE DE CODESTYLE ---
+  codestyle_agent:
+    build: ./codestyle_agent
+    container_name: codestyle_agent
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./codestyle_agent/app:/app
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      MODEL_NAME: ${MODEL_NAME}
+  # --- SERVIÇO DO AGENTE DE PERFORMANCE ---
+  performance_agent:
+    build: ./performance_agent
+    container_name: performance_agent
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./performance_agent/app:/app
+
+  # --- SERVIÇO DO ORQUESTRADOR ---
+  orchestrator:
+    build: ./orchestrator
+    container_name: orchestrator
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./orchestrator/app:/app
+    environment:
+      DATABASE_URL: "postgresql://root:root@postgres:5432/postgres_db"
+      SECURITY_AGENT_URL: "http://security_agent:8000"
+      PERFORMANCE_AGENT_URL: "http://performance_agent:8000"
+      CODESTYLE_AGENT_URL: "http://codestyle_agent:8000"
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      MODEL_NAME: ${MODEL_NAME}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      security_agent:
+        condition: service_started
+      codestyle_agent:
+        condition: service_started
+      performance_agent:
+        condition: service_started
+
+volumes:
+  postgres_data:
+    driver: local
