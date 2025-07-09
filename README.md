@@ -228,8 +228,10 @@ Em vez de expor as portas dos agentes (8001, 8002, 8003), apenas o Nginx exporia
 
 A configuração do Nginx definiria upstreams para cada grupo de agentes e distribuiria o tráfego entre eles.
 
-Para escalar um serviço, bastaria aumentar o número de réplicas no docker-compose: docker-compose up --build --scale security_agent=3.
-
+Para escalar um serviço, bastaria aumentar o número de réplicas no docker-compose:
+```bash
+    docker-compose up --build --scale security_agent=3.
+```
 Arquitetura com Load Balancer:
 ```
 
