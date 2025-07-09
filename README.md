@@ -118,7 +118,7 @@ A tabela no banco de dados será criada na inicialização do serviço, mas caso
 ### Como Usar a API
 Para submeter um código para análise, envie uma requisição POST para o endpoint /orchestrate-analysis do Orquestrador.
 
-Para auxiliar. Existe uma collections para utilização dentro
+Para auxiliar. Existe uma collections para utilização na pasta collections. [collection_muliagentes](collections/Sistema%20Multi%20Agentes.postman_collection.json)
 
 **URL:** http://localhost:8080/orchestrate-analysis
 **Método:** POST
@@ -173,6 +173,32 @@ A API retornará um objeto JSON com as sugestões estruturadas de cada agente:
 }
 ```
 
+### Acessando banco
+
+Caso seja necessário visualizar o banco. Você pode acessar o bash do container com o comando:
+```bash
+    >> docker compose exec postgres bash
+    7d20360295e2:/#
+```
+
+Depois se conecta ao banco pelo usuário apresentado no `docker-compose.yaml`
+
+```bash
+    >> psql -U root postgres_db
+    psql (15.13)
+    Type "help" for help.
+
+    postgres_db=#
+```
+
+E por fim, é possivel fazer o select ou queries no banco:
+```bash
+    >> select count(*) from analysis_history;
+    count
+    -------
+        1
+    (1 row)
+```
 ### Decisões Técnicas
 
 **Docker e Docker Compose:** Simplificam a configuração do ambiente e garantem a portabilidade da aplicação.

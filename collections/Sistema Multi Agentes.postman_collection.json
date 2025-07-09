@@ -1,0 +1,325 @@
+{
+	"info": {
+		"_postman_id": "3108d834-df1f-48e3-a7dc-7959e670886c",
+		"name": "Sistema Multi Agentes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27496632"
+	},
+	"item": [
+		{
+			"name": "Security Agent",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8001/health",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analyze - Sem Vulnerabilidade",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\" : \"def codigo_teste(a, b):\\n    return a + b\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8001/analyze",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analyze - Com Vulnerabilidade",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"import pickle\\nimport base64\\n\\ndef deserialize_data(encoded_data):\\n    data = base64.b64decode(encoded_data)\\n    return pickle.loads(data)\\n\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8001/analyze",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Codestyle Agent",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8002/health",
+							"host": [
+								"localhost"
+							],
+							"port": "8002",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analyze - Sem Code Smell",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"def somar_numeros(primeiro_numero: int, segundo_numero: int) -> int:\\n    \\\"\\\"\\\"\\n    Soma dois números inteiros e retorna o resultado.\\n\\n    Args:\\n        primeiro_numero: O primeiro número da adição.\\n        segundo_numero: O segundo número da adição.\\n\\n    Returns:\\n        A soma dos dois números.\\n    \\\"\\\"\\\"\\n    return primeiro_numero + segundo_numero\\n\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8002/analyze",
+							"host": [
+								"localhost"
+							],
+							"port": "8002",
+							"path": [
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analyze - Com Code Smell",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"import os\\n\\ndef MinhaFuncao(a,b):\\n    resultado=a+b # Comentário sem espaço\\n    print('O resultado da operação é: ' + str(resultado) + '. Este é um texto muito, muito, muito, muito, muito, muito, muito, muito longo para garantir que a linha exceda o limite de caracteres recomendado pela PEP 8.')\\n    return resultado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8002/analyze",
+							"host": [
+								"localhost"
+							],
+							"port": "8002",
+							"path": [
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance Agent",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8003/health",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analyze - Sem Report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"nomes = ['ana', 'bruno', 'carla']\\nnomes_maiusculos = [nome.upper() for nome in nomes]\\nprint(nomes_maiusculos)\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8003/analyze",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analyze - Com Report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"def fibonacci_recursivo(n):\\n    if n <= 1:\\n        return n\\n    else:\\n        return fibonacci_recursivo(n-1) + fibonacci_recursivo(n-2)\\n\\n# Chama a função para alguns números\\nfor i in range(20):\\n    fibonacci_recursivo(i)\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8003/analyze",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orchestrator",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8003/health",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "orchestrate-analysis",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"code\": \"import os\\n\\ndef MinhaFuncao(a,b):\\n    resultado=a+b # Comentário sem espaço\\n    print('O resultado da operação é: ' + str(resultado) + '. Este é um texto muito, muito, muito, muito, muito, muito, muito, muito longo para garantir que a linha exceda o limite de caracteres recomendado pela PEP 8.')\\n    return resultado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/orchestrate-analysis",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"orchestrate-analysis"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "example",
+			"value": "token",
+			"type": "string"
+		},
+		{
+			"key": "example22",
+			"value": "1213123",
+			"type": "string"
+		}
+	]
+}
