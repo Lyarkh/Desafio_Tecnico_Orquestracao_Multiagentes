@@ -40,7 +40,6 @@ async def call_gemini_api(prompt: str, task_name: str) -> dict:
 
     except Exception as e:
         logging.error(f"Ocorreu um erro ao chamar a API do Gemini: {e}")
-        # Retornamos um dicionário com o erro para que o fluxo não quebre.
         return {
             "title": "Erro na Análise da IA",
             "explanation": f"Não foi possível gerar a sugestão. Detalhes do erro: {e}",

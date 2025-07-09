@@ -1,4 +1,3 @@
-import json
 import logging
 import asyncio
 import os
@@ -14,15 +13,12 @@ async def run_hybrid_analysis(code: str) -> list[EnrichedSuggestion]:
     Executa a análise de estilo híbrida: primeiro com o flake8, depois enriquecendo com a IA.
     Se o flake8 não encontrar nada, a IA faz uma análise geral de boas práticas.
     """
-    # ETAPA 1: Executar a ferramenta especialista (flake8)
     temp_dir = tempfile.mkdtemp()
     temp_filename = f"{temp_dir}/temp_code_for_style_analysis.py"
     with open(temp_filename, "w") as f:
         f.write(code)
 
     logging.info(f"Executando o flake8 no arquivo: {temp_filename}")
-    # O flake8 não tem uma saída JSON nativa, então formatamos a saída para ser fácil de parsear.
-    # Formato: linha:coluna:código_erro:texto_erro
     result = subprocess.run(
         ["flake8", "--format=%(row)d:%(col)d:%(code)s:%(text)s", temp_filename],
         capture_output=True,
@@ -33,11 +29,9 @@ async def run_hybrid_analysis(code: str) -> list[EnrichedSuggestion]:
 
     flake8_results = result.stdout.strip().split('\n') if result.stdout.strip() else []
 
-    # ETAPA 2: Lógica condicional de análise
     tasks = []
     enriched_suggestions = []
     if flake8_results:
-        # CASO 1: Flake8 encontrou problemas. Enriquecer cada um.
         logging.info(f"Flake8 encontrou {len(flake8_results)} problemas. Enriquecendo com a IA...")
         for issue_line in flake8_results:
             parts = issue_line.split(':', 3)
@@ -45,7 +39,6 @@ async def run_hybrid_analysis(code: str) -> list[EnrichedSuggestion]:
 
             line_num, col_num, error_code, error_message = parts
 
-            # Pega a linha de código específica com o problema
             code_line = code.splitlines()[int(line_num) - 1]
 
             prompt = f"""
@@ -73,7 +66,6 @@ async def run_hybrid_analysis(code: str) -> list[EnrichedSuggestion]:
             else:
                 logging.warning(f"Não foi possível obter uma sugestão válida da IA para o problema: {error_message}")
     else:
-        # CASO 2: Flake8 não encontrou nada. Pedir uma análise geral de boas práticas para a IA.
         logging.info("O flake8 não encontrou problemas. Solicitando uma análise geral de boas práticas da IA.")
         prompt = f"""
         A ferramenta 'flake8' não encontrou problemas de estilo no código abaixo.
