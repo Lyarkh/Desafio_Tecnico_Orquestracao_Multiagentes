@@ -2,10 +2,9 @@
 
 ## Visão Geral
 
-Este projeto implementa um sistema avançado para análise e otimização de código Python, utilizando uma arquitetura de microsserviços e o poder da Inteligência Artificial Generativa. Um serviço Orquestrador central gerencia as requisições e coordena o trabalho de múltiplos Agentes especializados.
+Este projeto implementa um sistema avançado para análise e otimização de código Python, utilizando uma arquitetura de microsserviços e o poder da Inteligência Artificial Generativa. Um serviço Orquestrador central gerencia as requisições e coordena o trabalho de múltiplos Agentes especializados com a utilização do CrewAI.
 
-Cada agente utiliza uma ferramenta de análise específica (segurança, performance, estilo) e, em seguida, enriquece os resultados brutos utilizando a API do Google Gemini. Isso transforma os relatórios técnicos em sugestões práticas, explicativas e acionáveis para o desenvolvedor, com exemplos de código corrigido. O histórico das análises é persistido em um banco de dados PostgreSQL.
-
+Cada agente utiliza uma ferramenta de análise específica (segurança, performance, estilo). Isso transforma os relatórios técnicos em sugestões práticas, explicativas e acionáveis para o desenvolvedor, com exemplos de código corrigido. O histórico das análises é persistido em um banco de dados PostgreSQL.
 
 
 ## Arquitetura do **Sistema**
@@ -50,16 +49,14 @@ Agregar as sugestões de cada agente em um relatório final consolidado.
 
 Persistir o código e o relatório no banco de dados PostgreSQL.
 
+O núcleo do projeto é a utilização do framework CrewAI para definir, gerenciar e executar as tarefas dos agentes.
+
 ## 2. Agentes Especializados (security_agent, performance_agent, codestyle_agent)
 O fluxo de trabalho para cada agente é o mesmo:
 
 Recebe o código do Orquestrador no endpont `POST /analyse`.
 
 Executa sua ferramenta de análise local especializada.
-
-Envia o relatório da ferramenta para a API do Google Gemini através de um prompt específico.
-
-Recebe da IA uma análise enriquecida, com explicações detalhadas e exemplos práticos.
 
 Retorna uma lista de sugestões estruturadas para o Orquestrador.
 
@@ -81,37 +78,96 @@ Retorna uma lista de sugestões estruturadas para o Orquestrador.
 
 **Foco:** Analisar o perfil de execução do código para encontrar gargalos e sugerir otimizações de performance.
 
-## 3. Banco de Dados (db)
+## Banco de Dados (db)
 
 **Tecnologia:** PostgreSQL 15.
 
 **Responsabilidade:** Armazenar o histórico de todas as análises na tabela analysis_history.
 
+
+
 ## Como Executar o Projeto
+
+Siga os passos abaixo para configurar e executar o ambiente de desenvolvimento local.
+
 ### Pré-requisitos
-- Docker
-- Docker Compose
-- Uma API Key do Google Gemini.
 
-### 1. Configuração do Ambiente
-Antes de iniciar, é crucial configurar as variáveis de ambiente.
-
-Crie um arquivo chamado .env na raiz do projeto a partir do exemplo.
-
-Preencha o arquivo .env com suas credenciais seguindo o .env.example:
-
-#### Variáveis da API do Google Gemini
 ```
-GOOGLE_API_KEY=SUA_API_KEY_AQUI
-MODEL_NAME=gemini-1.5-flash
+Docker
+Docker Compose
 ```
 
-### 2. Inicialização dos Serviços
-Com o Docker em execução, abra um terminal na raiz do projeto e execute:
+#### 1. Clonar o Repositório
+```bash
+git clone [https://github.com/Lyarkh/Desafio_Tecnico_Orquestracao_Multiagentes](https://github.com/Lyarkh/Desafio_Tecnico_Orquestracao_Multiagentes)
+cd Desafio_Tecnico_Orquestracao_Multiagentes
 ```
+
+#### 2. Configurar Variáveis de Ambiente
+Crie um arquivo .env na raiz do projeto, copiando o exemplo .env.example.
+
+```bash
+cp .env.example .env
+```
+Abra o arquivo .env e preencha as variáveis necessárias.
+
+```
+# .env
+GOOGLE_API_KEY="sua-chave-de-api-aqui"
+MODEL_NAME="gemini-1.5-flash"
+```
+
+#### 3. Subir os Containers
+Com o Docker em execução, utilize o Docker Compose para construir as imagens e iniciar todos os serviços.
+
+```bash
 docker-compose up --build
 ```
-Este comando irá construir e iniciar todos os contêineres. Aguarde até que os logs indiquem que os serviços estão prontos.
+Os seguintes serviços serão iniciados:
+
+**orchestrator:** A API principal do orquestrador (porta 8080).
+**codestyle_agent:** O agente de estilo de código (porta 8001).
+**security_agent:** O agente de segurança (porta 8002).
+**performance_agent:** O agente de performance (porta 8003).
+**db:** O banco de dados PostgreSQL (porta 5432).
+**pgadmin:** A interface de gerenciamento para o banco de dados (porta 5050).
+
+#### 4. Acessando os Serviços
+
+API do Orquestrador: http://localhost:8080/docs
+API do Agente de Estilo: http://localhost:8001/docs
+API do Agente de Segurança: http://localhost:8002/docs
+API do Agente de Performance: http://localhost:8003/docs
+
+#### 5. Testando a Aplicação
+Você pode usar a collection do Postman [collections](/collections/Sistema%20Multi%20Agentes.postman_collection.json) para testar os endpoints e o fluxo de análise. Importe a collection no seu Postman e envie uma requisição para o endpoint de análise do orquestrador.
+
+### Banco de Dados e PgAdmin
+O projeto utiliza um banco de dados PostgreSQL para persistir os resultados das análises. Um serviço do PgAdmin é disponibilizado para facilitar a visualização e o gerenciamento dos dados.
+
+Acesso ao PgAdmin:
+
+- URL: http://localhost:5050
+- Email/Usuário: admin@admin.com
+- Senha: admin
+
+#### Conectando ao Banco de Dados no PgAdmin
+Após fazer login no PgAdmin, clique com o botão direito em Servers e vá em Create -> Server....
+
+Na aba General, dê um nome para o servidor (ex: analise_agentes_db).
+
+Na aba Connection, preencha os seguintes campos:
+
+Host name/address: postgres_db (este é o nome do serviço do container do banco de dados no docker-compose.yaml).
+
+- Port: 5432
+- Maintenance database: postgres_db
+- Username: admin
+- Password: admin
+
+Clique em Save.
+
+Agora você poderá navegar pelas tabelas e visualizar os dados salvos pelo orquestrador. A tabela principal é a analysis_results.
 
 A tabela no banco de dados será criada na inicialização do serviço, mas caso queira rodar posteriormente. A query se encontra em [init.sql](database/init.sql)
 
@@ -140,7 +196,7 @@ curl -X POST "http://localhost:8080/orchestrate-analysis" \
 ```
 
 ### Exemplo de Resposta (JSON)
-A API retornará um objeto JSON com as sugestões estruturadas de cada agente:
+A API retornará um objeto JSON com as sugestões estruturadas:
 ```json
 {
     "security": {
@@ -173,32 +229,7 @@ A API retornará um objeto JSON com as sugestões estruturadas de cada agente:
 }
 ```
 
-### Acessando banco
 
-Caso seja necessário visualizar o banco. Você pode acessar o bash do container com o comando:
-```bash
-    >> docker compose exec postgres bash
-    7d20360295e2:/#
-```
-
-Depois se conecta ao banco pelo usuário apresentado no `docker-compose.yaml`
-
-```bash
-    >> psql -U root postgres_db
-    psql (15.13)
-    Type "help" for help.
-
-    postgres_db=#
-```
-
-E por fim, é possivel fazer o select ou queries no banco:
-```bash
-    >> select count(*) from analysis_history;
-    count
-    -------
-        1
-    (1 row)
-```
 ### Decisões Técnicas
 
 **Docker e Docker Compose:** Simplificam a configuração do ambiente e garantem a portabilidade da aplicação.
