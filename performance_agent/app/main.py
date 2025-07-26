@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 app = FastAPI(
     title="Performance Agent",
-    description="Um agente que analisa o desempenho de trechos de código Python usando cProfile e enriquece os resultados com a API Gemini para fornecer sugestões de otimização.",
-    version="1.0.0"
+    description="Um agente que analisa o desempenho de trechos de código Python usando cProfile. Agente orquestrado com CrewAI.",
+    version="2.0.0"
 )
 
 @app.post("/analyze", response_model=models.AnalysisResponse)
