@@ -21,7 +21,7 @@ app = FastAPI(
     version="2.0.0"
 )
 
-@app.post("/orchestrate-analysis", response_model=models.AnalysisResponse)
+@app.post("/orchestrate-analysis", response_model=models.ConsolidatedResponse)
 async def orchestrate_analysis(payload: models.CodeInput, db: Session = Depends(get_db)):
     """
     Orquestra a análise de código:
@@ -40,8 +40,9 @@ async def orchestrate_analysis(payload: models.CodeInput, db: Session = Depends(
         logging.info("Orquestração concluída. Processando o resultado...")
 
         try:
-            result_data = json.loads(result_string.tasks_output[0].raw)
-            final_response = models.AnalysisResponse(**result_data)
+            result_data = json.loads(result_string.tasks_output[-1].raw)
+
+            final_response = models.ConsolidatedResponse(**result_data)
         except (json.JSONDecodeError, TypeError) as e:
             print(f"Erro ao processar a resposta da IA: {e}\nResposta recebida: {result_string}")
             raise HTTPException(

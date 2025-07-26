@@ -13,7 +13,7 @@ class EnrichedSuggestion(BaseModel):
 
 class AnalysisResponse(BaseModel):
     """Modelo para a resposta final da análise, contendo uma lista de sugestões."""
-    suggestions: list[EnrichedSuggestion, None]
+    suggestions: list[EnrichedSuggestion]
 
 class ConsolidatedResponse(BaseModel):
     """
