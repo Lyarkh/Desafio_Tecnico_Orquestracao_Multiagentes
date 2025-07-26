@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, JSON, DateTime, func
 from database import Base
 
+
 class AnalysisHistory(Base):
     __tablename__ = "analysis_history"
 
