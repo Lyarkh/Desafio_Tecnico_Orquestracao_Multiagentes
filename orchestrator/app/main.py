@@ -21,7 +21,7 @@ app = FastAPI(
     version="2.0.0"
 )
 
-@app.post("/orchestrate-analysis", response_model=models.ConsolidatedResponse)
+@app.post("/orchestrate-analysis", response_model=models.AnalysisResponse)
 async def orchestrate_analysis(payload: models.CodeInput, db: Session = Depends(get_db)):
     """
     Orquestra a análise de código:
@@ -53,7 +53,7 @@ async def orchestrate_analysis(payload: models.CodeInput, db: Session = Depends(
         crud.create_analysis_record(
             db=db,
             code_snippet=payload.code,
-            suggestions=final_response.dict()
+            suggestions=final_response.model_dump()
         )
         logging.info("Análise salva com sucesso.")
         return final_response

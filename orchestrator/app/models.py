@@ -20,6 +20,6 @@ class ConsolidatedResponse(BaseModel):
     Modelo da resposta final consolidada, contendo os resultados de cada agente.
     A estrutura é flexível para acomodar respostas de sucesso ou de erro.
     """
-    security: EnrichedSuggestion
-    performance: EnrichedSuggestion
-    codestyle: EnrichedSuggestion
+    security: AnalysisResponse
+    performance: AnalysisResponse
+    codestyle: AnalysisResponse
