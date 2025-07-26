@@ -19,6 +19,20 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  # --- SERVIÇO DO PGADMIN PARA VISUALIZAÇÃO DO BANCO DE DADOS POSTGRESQL ---
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
 
   # --- SERVIÇO DO AGENTE DE SEGURANÇA ---
   security_agent:
@@ -68,6 +82,8 @@ services:
       SECURITY_AGENT_URL: "http://security_agent:8000"
       PERFORMANCE_AGENT_URL: "http://performance_agent:8000"
       CODESTYLE_AGENT_URL: "http://codestyle_agent:8000"
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      MODEL_NAME: ${MODEL_NAME}
     depends_on:
       postgres:
         condition: service_healthy
@@ -80,4 +96,6 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
+  pgadmin-data:
     driver: local
